@@ -473,7 +473,7 @@ body {
 .score-panel {
   position: absolute;
   top: 50px;
-  right:-50px;
+  right: 30px;
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(15px);
   color: white;

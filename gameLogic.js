@@ -172,7 +172,7 @@ class GameManager {
             this.score = Math.max(0, this.score - 10);
             this.updateScoreDisplay();
         }
-        }
+    }
 
     completeChapter() {
         // Chapter completion bonus
@@ -630,13 +630,42 @@ class GameManager {
             max-width: 650px;
             width: 90%;
             max-height: 85vh;
+            overflow-y: auto;
             position: relative;
             box-shadow: 
                 0 15px 50px rgba(0, 0, 0, 0.6),
                 0 8px 25px rgba(0, 0, 0, 0.4),
                 inset 0 2px 0 rgba(255, 255, 255, 0.1),
                 0 0 0 2px rgba(233, 233, 164, 0.3);
+            scrollbar-width: thin;
+            scrollbar-color: #E9E9A4 rgba(0, 0, 0, 0.2);
         `;
+        
+        // Add custom scrollbar styles for Webkit browsers
+        const style = document.createElement('style');
+        style.textContent = `
+            .story-content::-webkit-scrollbar {
+                width: 10px;
+            }
+            .story-content::-webkit-scrollbar-track {
+                background: rgba(0, 0, 0, 0.2);
+                border-radius: 10px;
+                margin: 10px 0;
+            }
+            .story-content::-webkit-scrollbar-thumb {
+                background: linear-gradient(180deg, #E9E9A4, #ffd700);
+                border-radius: 10px;
+                border: 2px solid rgba(0, 0, 0, 0.3);
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            }
+            .story-content::-webkit-scrollbar-thumb:hover {
+                background: linear-gradient(180deg, #ffd700, #E9E9A4);
+                box-shadow: 
+                    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+                    0 0 8px rgba(233, 233, 164, 0.6);
+            }
+        `;
+        document.head.appendChild(style);
         
         const closeBtn = modal.querySelector('.story-close');
         closeBtn.style.cssText = `
@@ -693,7 +722,7 @@ class GameManager {
         if (feedback) {
             // Clear any existing animations
             feedback.className = 'feedback-message';
-        feedback.textContent = message;
+            feedback.textContent = message;
             
             // Add type and show class
             setTimeout(() => {
@@ -704,13 +733,14 @@ class GameManager {
             const displayTime = type === 'complete' ? 3000 : 2000;
             setTimeout(() => {
                 feedback.classList.remove('show');
-        setTimeout(() => {
-            feedback.textContent = '';
+                setTimeout(() => {
+                    feedback.textContent = '';
                     feedback.className = 'feedback-message';
                 }, 300);
             }, displayTime);
         }
     }
+
     updateMaxCombo() {
         if (this.combo > this.maxCombo) {
             this.maxCombo = this.combo;
