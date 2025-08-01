@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .test-item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background: #e8f5e8; }
+        .error { background: #ffeaea; }
+        .warning { background: #fff3cd; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎮 Kiểm tra trò chơi Múa Rối Nước</h1>
+        
+        <div class="test-item">
+            <h3>1. Kiểm tra file JavaScript</h3>
+            <div id="js-check">Đang kiểm tra...</div>
+        </div>
+        
+        <div class="test-item">
+            <h3>2. Kiểm tra dữ liệu chương</h3>
+            <div id="chapter-check">Đang kiểm tra...</div>
+        </div>
+        
+        <div class="test-item">
+            <h3>3. Kiểm tra game manager</h3>
+            <div id="manager-check">Đang kiểm tra...</div>
+        </div>
+        
+        <div class="test-item">
+            <h3>4. Test trò chơi</h3>
+            <button onclick="startGame()">🚀 Bắt đầu game</button>
+            <button onclick="testKeyPress()">⌨️ Test phím</button>
+            <div id="game-status">Sẵn sàng để test</div>
+        </div>
+        
+        <div class="test-item">
+            <h3>5. Lỗi (nếu có)</h3>
+            <div id="error-log"></div>
+        </div>
+    </div>
+
+    <!-- Load game files -->
+    <script src="chapterData.js"></script>
+    <script src="keyHandler.js"></script>
+    <script src="gameLogic.js"></script>
+    
+    <script>
+        let testErrors = [];
+        
+        // Test 1: Check JS files loaded
+        setTimeout(() => {
+            let jsStatus = document.getElementById('js-check');
+            try {
+                if (typeof chapters !== 'undefined' && typeof KeyHandler !== 'undefined' && typeof GameManager !== 'undefined') {
+                    jsStatus.innerHTML = '<span style="color: green;">✅ Tất cả file JS đã tải thành công</span>';
+                    jsStatus.parentElement.classList.add('success');
+                } else {
+                    throw new Error('Một số file JS chưa tải');
+                }
+            } catch (e) {
+                jsStatus.innerHTML = '<span style="color: red;">❌ ' + e.message + '</span>';
+                jsStatus.parentElement.classList.add('error');
+                testErrors.push('JS Files: ' + e.message);
+            }
+        }, 100);
+        
+        // Test 2: Check chapter data
+        setTimeout(() => {
+            let chapterStatus = document.getElementById('chapter-check');
+            try {
+                if (typeof chapters !== 'undefined') {
+                    const chapterCount = Object.keys(chapters).length;
+                    chapterStatus.innerHTML = `<span style="color: green;">✅ Có ${chapterCount} chương dữ liệu</span>`;
+                    chapterStatus.parentElement.classList.add('success');
+                } else {
+                    throw new Error('Không tìm thấy dữ liệu chương');
+                }
+            } catch (e) {
+                chapterStatus.innerHTML = '<span style="color: red;">❌ ' + e.message + '</span>';
+                chapterStatus.parentElement.classList.add('error');
+                testErrors.push('Chapter Data: ' + e.message);
+            }
+        }, 200);
+        
+        // Test 3: Check GameManager
+        setTimeout(() => {
+            let managerStatus = document.getElementById('manager-check');
+            try {
+                const testManager = new GameManager();
+                if (testManager && typeof testManager.startChapter === 'function') {
+                    managerStatus.innerHTML = '<span style="color: green;">✅ GameManager hoạt động bình thường</span>';
+                    managerStatus.parentElement.classList.add('success');
+                } else {
+                    throw new Error('GameManager có vấn đề');
+                }
+            } catch (e) {
+                managerStatus.innerHTML = '<span style="color: red;">❌ ' + e.message + '</span>';
+                managerStatus.parentElement.classList.add('error');
+                testErrors.push('GameManager: ' + e.message);
+            }
+        }, 300);
+        
+        // Update error log
+        setTimeout(() => {
+            let errorLog = document.getElementById('error-log');
+            if (testErrors.length > 0) {
+                errorLog.innerHTML = testErrors.map(err => `<div style="color: red; margin: 5px 0;">• ${err}</div>`).join('');
+                errorLog.parentElement.classList.add('error');
+            } else {
+                errorLog.innerHTML = '<span style="color: green;">✅ Không có lỗi được phát hiện</span>';
+                errorLog.parentElement.classList.add('success');
+            }
+        }, 500);
+        
+        function startGame() {
+            const status = document.getElementById('game-status');
+            try {
+                status.innerHTML = '<span style="color: blue;">🎮 Đang khởi động game...</span>';
+                window.open('game.html', '_blank');
+                status.innerHTML = '<span style="color: green;">✅ Game đã mở trong tab mới</span>';
+            } catch (e) {
+                status.innerHTML = '<span style="color: red;">❌ Lỗi: ' + e.message + '</span>';
+            }
+        }
+        
+        function testKeyPress() {
+            const status = document.getElementById('game-status');
+            try {
+                status.innerHTML = '<span style="color: blue;">⌨️ Test KeyHandler...</span>';
+                const keyHandler = new KeyHandler();
+                if (keyHandler && typeof keyHandler.handleKeyPress === 'function') {
+                    status.innerHTML = '<span style="color: green;">✅ KeyHandler hoạt động bình thường</span>';
+                } else {
+                    throw new Error('KeyHandler có vấn đề');
+                }
+            } catch (e) {
+                status.innerHTML = '<span style="color: red;">❌ Lỗi KeyHandler: ' + e.message + '</span>';
+            }
+        }
+        
+        // Catch all errors
+        window.onerror = function(msg, url, line, col, err) {
+            console.error('Error:', msg, 'at', url, ':', line, ':', col);
+            let errorLog = document.getElementById('error-log');
+            errorLog.innerHTML += `<div style="color: red; margin: 5px 0;">• Global Error: ${msg} (Line ${line})</div>`;
+        };
+    </script>
+</body>
+</html>

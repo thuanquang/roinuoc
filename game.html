@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Múa Rối Nước - Gameplay</title>
+    <link rel="stylesheet" href="game-styles.css">
+</head>
+<body>
+    <div class="game-wrapper">
+        <div class="water-stage">
+            <div class="ripple-effect"></div>
+            <div class="puppet-container">
+                <div class="puppet"></div>
+            </div>
+        </div>
+
+        <!-- Navigation Bar -->
+        <div class="game-nav">
+            <button class="nav-btn" id="home-btn" onclick="returnToHome()">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">Trang chủ</span>
+            </button>
+            <div class="chapter-info">
+                <h3 id="current-chapter-title">Chương đang chơi</h3>
+            </div>
+            <button class="nav-btn" id="restart-btn" onclick="restartChapter()">
+                <span class="nav-icon">🔄</span>
+                <span class="nav-text">Chơi lại</span>
+            </button>
+        </div>
+
+        <div class="game-ui">
+            <div class="npc-dialogue">
+                <div class="npc-avatar"></div>
+                <div class="dialogue-text">
+                    "Hãy thực hiện động tác theo tổ hợp phím..."
+                </div>
+            </div>
+
+            <div class="key-sequence">
+                <div class="sequence-display"></div>
+                <div class="puppet-model-space"></div>
+                <div class="key-container">
+                    <div class="key-row">
+                        <div class="key" data-key="W">W</div>
+                    </div>
+                    <div class="key-row">
+                        <div class="key" data-key="A">A</div>
+                        <div class="key" data-key="S">S</div>
+                        <div class="key" data-key="D">D</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feedback-message"></div>
+        </div>
+
+        <div class="control-hints">
+            <div class="hint">
+                <span class="key-hint">W</span> - Vẫy tay lên
+            </div>
+            <div class="hint">
+                <span class="key-hint">A</span> - Xoay trái
+            </div>
+            <div class="hint">
+                <span class="key-hint">S</span> - Cúi đầu
+            </div>
+            <div class="hint">
+                <span class="key-hint">D</span> - Xoay phải
+            </div>
+        </div>
+    </div>
+    <script src="chapterData.js"></script>
+    <script src="keyHandler.js"></script>
+    <script src="gameLogic.js"></script>
+    <script>
+        // Ensure storyManager is available
+        if (typeof window.storyManager === 'undefined') {
+            console.warn('StoryManager not found, initializing...');
+            window.storyManager = new StoryManager();
+        }
+    </script>
+    <script>
+        // Navigation functions
+        function returnToHome() {
+            const confirmReturn = confirm('Bạn có chắc muốn thoát về trang chủ? Tiến độ hiện tại sẽ bị mất.');
+            if (confirmReturn) {
+                window.location.href = 'index.html';
+            }
+        }
+        
+        function restartChapter() {
+            const confirmRestart = confirm('Bạn có chắc muốn chơi lại chương này?');
+            if (confirmRestart) {
+                window.location.reload();
+            }
+        }
+    </script>
+</body>
+</html>

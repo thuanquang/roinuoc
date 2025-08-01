@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Múa Rối Nước - Hành Trình Nghệ Thuật Việt Nam</title>
+    <link rel="stylesheet" href="index-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="main-wrapper">
+        <!-- Background Animation -->
+        <div class="water-background">
+            <div class="ripple-animation"></div>
+            <div class="ripple-animation delay-1"></div>
+            <div class="ripple-animation delay-2"></div>
+        </div>
+
+        <!-- Header -->
+        <header class="game-header">
+            <div class="header-content">
+                <div class="header-logo">
+                    <img src="asset/SvgjsG1012.svg" alt="Logo" class="logo-image">
+                </div>
+                <div class="header-title">
+                    <img src="asset/Thuy Dinh.svg" alt="Thùy Đình" class="title-image">
+                    <p class="game-subtitle">Hành trình khám phá nghệ thuật truyền thống Việt Nam</p>
+                </div>
+                <div class="progress-summary">
+                    <div class="total-progress">
+                        <span class="progress-label">Tiến độ tổng:</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="total-progress"></div>
+                        </div>
+                        <span class="progress-text" id="progress-text">0/7</span>
+                    </div>
+                    <div class="reset-section">
+                        <button class="reset-btn" onclick="showResetModal()">
+                            <span class="reset-icon">🔄</span>
+                            <span class="reset-text">Bắt đầu lại</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="chapters-container">
+            <div class="chapters-grid" id="chapters-grid">
+                <!-- Chapters will be dynamically generated -->
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="game-footer">
+            <div class="footer-content">
+                <p>🌊 Nghệ thuật múa rối nước - Di sản văn hóa Việt Nam 🌊</p>
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <span class="stat-icon">🏆</span>
+                        <span class="stat-text">Điểm cao: <span id="high-score">0</span></span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">⭐</span>
+                        <span class="stat-text">Chương hoàn thành: <span id="completed-chapters">0</span></span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Chapter Detail Modal -->
+        <div class="modal-overlay" id="chapter-modal">
+            <div class="modal-content">
+                <button class="modal-close" id="modal-close">×</button>
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modal-title"></h2>
+                    <div class="modal-difficulty" id="modal-difficulty"></div>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-description" id="modal-description"></div>
+                    <div class="modal-sequences" id="modal-sequences"></div>
+                    <div class="modal-stats" id="modal-stats"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="modal-cancel">Hủy</button>
+                    <button class="btn btn-primary" id="modal-play">Chơi ngay</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reset Confirmation Modal -->
+        <div class="modal-overlay" id="reset-modal">
+            <div class="modal-content reset-modal-content">
+                <button class="modal-close" onclick="hideResetModal()">×</button>
+                <div class="modal-header">
+                    <div class="reset-modal-icon">⚠️</div>
+                    <h2 class="modal-title">Xác nhận bắt đầu lại</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="reset-warning-text">
+                        <p>Bạn có chắc chắn muốn xóa tất cả tiến trình?</p>
+                        <div class="reset-details">
+                            <div class="reset-item">🗑️ Xóa tiến độ các chương</div>
+                            <div class="reset-item">🔓 Khóa lại các chương đã mở</div>
+                            <div class="reset-item">📚 Xóa câu chuyện đã mở khóa</div>
+                            <div class="reset-item">🏆 Xóa điểm số và thành tích</div>
+                        </div>
+                        <p class="reset-note">Hành động này không thể hoàn tác!</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="hideResetModal()">Hủy bỏ</button>
+                    <button class="btn btn-danger" onclick="confirmResetProgress()">Xác nhận xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="chapterData.js"></script>
+    <script src="index-game.js"></script>
+</body>
+</html>
