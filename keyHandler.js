@@ -163,3 +163,17 @@ class KeyHandler {
         document.dispatchEvent(new CustomEvent('sequenceFailed'));
     }
 }
+const originalHandleKeyPress = KeyHandler.prototype.handleKeyPress;
+KeyHandler.prototype.handleKeyPress = function(e) {
+    // Call original method
+    originalHandleKeyPress.call(this, e);
+    
+    // Trigger character animation
+    if (window.character3D && !this.isWaiting) {
+        const key = e.key.toLowerCase();
+        if (['w', 'a', 's', 'd'].includes(key)) {
+            // Character will handle the animation
+            window.character3D.handleKeyPress(e);
+        }
+    }
+};
