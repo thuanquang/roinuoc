@@ -43,6 +43,9 @@ class Character3D {
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         
+        // Add ground plane for shadow receiving
+        this.setupGround();
+        
         // Add lights
         this.setupLights();
         
@@ -56,18 +59,47 @@ class Character3D {
         window.addEventListener('resize', () => this.onWindowResize());
     }
 
+    setupGround() {
+        // Creating ground plane to receive shadows
+        const groundGeometry = new THREE.PlaneGeometry(10, 10);
+        const groundMaterial = new THREE.MeshStandardMaterial({
+            color: 0xaaaaaa,
+            transparent: true,
+            opacity: 0.5
+        });
+        const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        ground.rotation.x = -Math.PI / 2; // Rotate to lie flat
+        ground.position.y = -0.01; // Slightly below character
+        ground.receiveShadow = true;
+        this.scene.add(ground);
+    }
+
     setupLights() {
-        // Ambient light
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        // Ambient light (reduced intensity to make shadows more visible)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
         this.scene.add(ambientLight);
         
-        // Directional light
+        // Directional light with enhanced shadow settings
         const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
         directionalLight.position.set(5, 10, 5);
         directionalLight.castShadow = true;
-        directionalLight.shadow.mapSize.width = 1024;
-        directionalLight.shadow.mapSize.height = 1024;
+        
+        // Optimize shadow camera
+        directionalLight.shadow.camera.left = -5;
+        directionalLight.shadow.camera.right = 5;
+        directionalLight.shadow.camera.top = 5;
+        directionalLight.shadow.camera.bottom = -5;
+        directionalLight.shadow.camera.near = 0.1;
+        directionalLight.shadow.camera.far = 20;
+        directionalLight.shadow.mapSize.width = 2048; // Higher resolution for sharper shadows
+        directionalLight.shadow.mapSize.height = 2048;
+        directionalLight.shadow.bias = -0.001; // Prevent shadow acne
+        
         this.scene.add(directionalLight);
+        
+        // Optional: Add helper to debug shadow camera
+        // const helper = new THREE.CameraHelper(directionalLight.shadow.camera);
+        // this.scene.add(helper);
         
         // Point light for character highlighting
         const pointLight = new THREE.PointLight(0xffaa00, 0.5, 10);
@@ -87,11 +119,15 @@ class Character3D {
                 this.model.scale.set(1, 1, 1);
                 this.model.position.set(0, 0, 0);
                 
-                // Enable shadows
+                // Enable shadows for all meshes in the model
                 this.model.traverse((child) => {
                     if (child.isMesh) {
                         child.castShadow = true;
                         child.receiveShadow = true;
+                        // Ensure material supports shadows
+                        if (child.material) {
+                            child.material.needsUpdate = true;
+                        }
                     }
                 });
                 
@@ -125,9 +161,11 @@ class Character3D {
     createFallbackModel() {
         console.log('Creating fallback model');
         const geometry = new THREE.BoxGeometry(0.5, 1, 0.3);
-        const material = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+        const material = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
         this.model = new THREE.Mesh(geometry, material);
         this.model.position.set(0, 0.5, 0);
+        this.model.castShadow = true;
+        this.model.receiveShadow = true;
         this.scene.add(this.model);
         this.onModelLoaded();
     }
@@ -286,82 +324,45 @@ class Character3D {
     }
 
     showSuccessAnimation() {
-        if (!this.model) return;
-        
-        // Green glow effect
-        const originalEmissive = this.model.material?.emissive?.clone();
-        if (this.model.material) {
-            this.model.material.emissive = new THREE.Color(0x00ff00);
-            setTimeout(() => {
-                if (originalEmissive) {
-                    this.model.material.emissive = originalEmissive;
-                } else {
-                    this.model.material.emissive = new THREE.Color(0x000000);
-                }
-            }, 1000);
-        }
+       
     }
 
     showFailureAnimation() {
-        if (!this.model) return;
         
-        // Red glow + shake effect
-        const originalEmissive = this.model.material?.emissive?.clone();
-        if (this.model.material) {
-            this.model.material.emissive = new THREE.Color(0xff0000);
-        }
-        
-        // Shake animation
-        const originalPosition = this.model.position.clone();
-        let shakeTime = 0;
-        const shakeAnimation = () => {
-            shakeTime += 0.1;
-            this.model.position.x = originalPosition.x + Math.sin(shakeTime * 20) * 0.05;
-            
-            if (shakeTime < 0.5) {
-                requestAnimationFrame(shakeAnimation);
-            } else {
-                this.model.position.copy(originalPosition);
-                if (originalEmissive && this.model.material) {
-                    this.model.material.emissive = originalEmissive;
-                } else if (this.model.material) {
-                    this.model.material.emissive = new THREE.Color(0x000000);
-                }
-            }
-        };
-        shakeAnimation();
     }
 
     showCompletionAnimation() {
         if (!this.model) return;
         
         // Golden glow + celebration spin
-        const originalEmissive = this.model.material?.emissive?.clone();
-        if (this.model.material) {
-            this.model.material.emissive = new THREE.Color(0xffd700);
-        }
-        
-        // Celebration spin
-        const originalRotation = this.model.rotation.clone();
-        let spinTime = 0;
-        const spinAnimation = () => {
-            spinTime += 0.05;
-            this.model.rotation.y = originalRotation.y + spinTime * 2;
-            this.model.position.y = Math.sin(spinTime * 5) * 0.1;
-            
-            if (spinTime < 1.2) {
-                requestAnimationFrame(spinAnimation);
-            } else {
-                this.model.rotation.copy(originalRotation);
-                this.model.position.y = 0;
-                if (originalEmissive && this.model.material) {
-                    this.model.material.emissive = originalEmissive;
-                } else if (this.model.material) {
-                    this.model.material.emissive = new THREE.Color(0x000000);
-                }
+        this.model.traverse((child) => {
+            if (child.isMesh && child.material) {
+                const originalEmissive = child.material.emissive?.clone();
+                child.material.emissive = new THREE.Color(0xffd700);
+                
+                // Celebration spin
+                const originalRotation = this.model.rotation.clone();
+                let spinTime = 0;
+                const spinAnimation = () => {
+                    spinTime += 0.05;
+                    this.model.rotation.y = originalRotation.y + spinTime * 2;
+                    this.model.position.y = Math.sin(spinTime * 5) * 0.1;
+                    
+                    if (spinTime < 1.2) {
+                        requestAnimationFrame(spinAnimation);
+                    } else {
+                        this.model.rotation.copy(originalRotation);
+                        this.model.position.y = 0;
+                        if (originalEmissive) {
+                            child.material.emissive = originalEmissive;
+                        } else {
+                            child.material.emissive = new THREE.Color(0x000000);
+                        }
+                    }
+                };
+                spinAnimation();
             }
-        };
-        spinAnimation();
+        });
     }
 
     createWaterRipple() {
